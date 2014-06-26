@@ -34,7 +34,7 @@ GNU General Public License for more details.
 #include "FreeRTOS.h"
 #include "task.h"
 #include "d1k_stdio_can.h"
-#include "d1k_portal.h"
+//#include "d1k_portal.h"
 #include "fullCAN.h"
 #include "diagnostics.h"
 #include "motor.h"
@@ -197,10 +197,10 @@ void ControlLoopInit(void)
 	piIq.dt = DTI;
 	piId.dt = DTI;
 
-	d1k_portal_RegisterFunction("a2d",a2dPortal);
-	d1k_portal_RegisterFunction("drivemode", drivemodePortal);
-	d1k_portal_RegisterFunction("ppoffcal",PPOffsetAnglePortal);
-	d1k_portal_RegisterFunction("dump", PrintHsLog);
+//	d1k_portal_RegisterFunction("a2d",a2dPortal);
+//	d1k_portal_RegisterFunction("drivemode", drivemodePortal);
+//	d1k_portal_RegisterFunction("ppoffcal",PPOffsetAnglePortal);
+//	d1k_portal_RegisterFunction("dump", PrintHsLog);
 
 	xTaskCreate( SendDebugData, "CANDBG", 2048, NULL, 3, &debugSendHandle );
 

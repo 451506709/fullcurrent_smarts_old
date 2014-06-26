@@ -33,10 +33,11 @@ GNU General Public License for more details.
 #include "fault.h"
 
 #include "d1k_led.h"
+#include "d1k_uart.h"
 #include "smarts_leds.h"
-#include "d1k_portal.h"
+//#include "d1k_portal.h"
 #include "d1k_stdio.h"
-#include "d1k_stdio_uart.h"
+//#include "d1k_stdio_uart.h"
 #include "string.h"
 #include "stdlib.h"
 #include <math.h>
@@ -55,55 +56,94 @@ GNU General Public License for more details.
 
 static void InitLEDs    ( void );
 static void InitDebug ( void );
+static void InitD1KUart ( void );
 
 int main()
 {
 	// This is needed for FreeRTOS.
 	NVIC_PriorityGroupConfig(NVIC_PriorityGroup_4);
 
-	InitDebug();
+	InitD1KUart( );
 
-	cfg_Init( );
+	// Initializes the digital debug header.
+	//InitDebug();
 
-	PolePosition_Init();
+	//cfg_Init( );
+
+	//PolePosition_Init();
 
 	// This MUST be initialized before fullCAN
-	MotorPosition_Init(FEEDBACK_POLE_POSITION);
+	//MotorPosition_Init(FEEDBACK_POLE_POSITION);
 
-	fullCAN_Init( 1000000, cfg_GetControllerID() );
+	//fullCAN_Init( 1000000, cfg_GetControllerID() );
 
-	if ( cfg_GetControllerID() == 0)
-	{
-		fullCAN_SetTerminationState(ENABLE);
-	} else {
-		fullCAN_SetTerminationState(DISABLE);
-	}
+//	if ( cfg_GetControllerID() == 0)
+//	{
+//		fullCAN_SetTerminationState(ENABLE);
+//	} else {
+//		fullCAN_SetTerminationState(DISABLE);
+//	}
+//
+//	d1k_STDIO_CAN_Init( CAN2,
+//			fullCAN_GetControllerId() + FULLCAN_IDBASE_STDIO_TX,
+//			fullCAN_GetControllerId() + FULLCAN_IDBASE_STDIO_RX );
 
-	d1k_STDIO_CAN_Init( CAN2,
-			fullCAN_GetControllerId() + FULLCAN_IDBASE_STDIO_TX,
-			fullCAN_GetControllerId() + FULLCAN_IDBASE_STDIO_RX );
+//	d1k_portal_Init( );
 
-	d1k_portal_Init( );
-
-	ControlLoopInit();
+//	ControlLoopInit();
 
 	InitLEDs( );
 
-	adc_Init( 100000 );
+//	adc_Init( 100000 );
 
-	motor_Init( );
+//	motor_Init( );
+//
+//	fault_Init( );
 
-	fault_Init( );
+//	diag_Init( );
 
-	diag_Init( );
+	//fan_Init( );
 
-	fan_Init( );
+	//fan_SetDutyCycle( 1.0f );
 
-	fan_SetDutyCycle( 1.0f );
-
-	printf("fullStartup! Controller: %u\r\n", (uint16)fullCAN_GetControllerId());
+//	printf("fullStartup! Controller: %u\r\n", (uint16)fullCAN_GetControllerId());
 
 	vTaskStartScheduler( );
+}
+
+static void uart_Task( void * pvParameters )
+{
+	portTickType xLastWakeTime = xTaskGetTickCount();
+
+	while (1)
+	{
+		printf("penis");
+		vTaskDelayUntil( &xLastWakeTime, configTICK_RATE_HZ/1);
+	}
+}
+
+xTaskHandle uartTaskHandle;
+
+
+static void InitD1KUart ( void )
+{
+	RCC_AHB1PeriphClockCmd(RCC_AHB1Periph_GPIOB, ENABLE);
+
+	GPIO_PinAFConfig(GPIOB, GPIO_PinSource10, GPIO_AF_USART3);
+	GPIO_PinAFConfig(GPIOB, GPIO_PinSource11, GPIO_AF_USART3);
+
+	GPIO_InitTypeDef GPIO_InitStruct;
+	GPIO_InitStruct.GPIO_Pin = GPIO_Pin_10 | GPIO_Pin_11;
+	GPIO_InitStruct.GPIO_Mode = GPIO_Mode_AF;
+	GPIO_InitStruct.GPIO_Speed = GPIO_Speed_50MHz;
+	GPIO_InitStruct.GPIO_OType = GPIO_OType_PP;
+	GPIO_InitStruct.GPIO_PuPd = GPIO_PuPd_UP;
+	GPIO_Init(GPIOB, &GPIO_InitStruct);
+
+	d1k_uart_init(9600);
+
+	xTaskCreate(uart_Task, "UART", 1024, NULL, 3, &uartTaskHandle);
+
 }
 
 static void InitDebug ( void )

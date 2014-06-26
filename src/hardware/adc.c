@@ -27,7 +27,7 @@ GNU General Public License for more details.
 
 #include "smarts_leds.h"
 #include "d1k.h"
-#include "d1k_portal.h"
+//#include "d1k_portal.h"
 #include "adc.h"
 
 //#include "intrinsics.h"
@@ -106,8 +106,10 @@ USE_FILTER_HAMMING_4KHZ;
  * Global Variables
  ***************************************************************************/
 
+
+//static uint16* adcDMA  = 0x2001C000;
 //__no_init
-static uint16 adcDMA [ ADC_NUM_CHANNELS * DMA_DEPTH ];
+ static uint16 adcDMA [ ADC_NUM_CHANNELS * DMA_DEPTH ];
 //@ 0x2001C000;
 static float         adcCache [ ADC_NUM_CHANNELS ];
 volatile uint32      dmaTargetIndex = 0;
@@ -370,9 +372,9 @@ void adc_Init( uint32 fs )
 	ADC_Cmd(ADC2, ENABLE);
 	ADC_Cmd(ADC3, ENABLE);
 
-	d1k_portal_RegisterFunction( "adcDefaultCal", adc_DefaultCalibrationCommand );
-	d1k_portal_RegisterFunction( "adcHighCal"   , adc_HighCalCommand );
-	d1k_portal_RegisterFunction( "adcLowCal"    , adc_LowCalCommand );
+//	d1k_portal_RegisterFunction( "adcDefaultCal", adc_DefaultCalibrationCommand );
+//	d1k_portal_RegisterFunction( "adcHighCal"   , adc_HighCalCommand );
+//	d1k_portal_RegisterFunction( "adcLowCal"    , adc_LowCalCommand );
 }
 
 /**

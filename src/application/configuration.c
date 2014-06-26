@@ -25,7 +25,7 @@ GNU General Public License for more details.
 #include "d1k_fram.h"
 #include "stdio.h"
 #include "fullCAN.h"
-#include "d1k_portal.h"
+//#include "d1k_portal.h"
 
 /****************************************************************************
  * Static Definitions
@@ -46,7 +46,7 @@ void cfg_Init( void )
 {
 	InitFramI2C( );
 
-	d1k_portal_RegisterFunction("cid",controllerIDCommand);
+//	d1k_portal_RegisterFunction("cid",controllerIDCommand);
 }
 
 float cfg_GetProperty( configProperty_t prop )
